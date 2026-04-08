@@ -2,7 +2,7 @@
 
 import { use, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { RoomProvider, useOthers, useSelf, useStorage, useMutation } from '@liveblocks/react';
+import { LiveblocksProvider, RoomProvider, useOthers, useSelf, useStorage, useMutation } from '@liveblocks/react';
 import { LiveMap } from '@liveblocks/client';
 import type { CanvasMeta, CanvasElement } from '@/lib/types';
 import { AVATAR_COLORS } from '@/lib/types';
@@ -265,12 +265,14 @@ export default function CanvasPage({ params }: { params: Promise<{ canvasId: str
   const { canvasId } = use(params);
 
   return (
-    <RoomProvider
-      id={`canvas-${canvasId}`}
-      initialPresence={{ cursor: null, nickname: '익명', color: AVATAR_COLORS[0] }}
-      initialStorage={{ elements: new LiveMap() }}
-    >
-      <CanvasRoom canvasId={canvasId} />
-    </RoomProvider>
+    <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
+      <RoomProvider
+        id={`canvas-${canvasId}`}
+        initialPresence={{ cursor: null, nickname: '익명', color: AVATAR_COLORS[0] }}
+        initialStorage={{ elements: new LiveMap() }}
+      >
+        <CanvasRoom canvasId={canvasId} />
+      </RoomProvider>
+    </LiveblocksProvider>
   );
 }

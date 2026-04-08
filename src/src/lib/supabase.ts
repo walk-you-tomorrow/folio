@@ -9,5 +9,11 @@ export function createServerSupabase() {
     throw new Error('Supabase 환경 변수가 설정되지 않았어요. .env.local을 확인해주세요.');
   }
 
-  return createClient(url, key);
+  return createClient(url, key, {
+    db: { schema: 'public' },
+    global: {
+      fetch: (input, init) =>
+        fetch(input, { ...init, signal: AbortSignal.timeout(3000) }),
+    },
+  });
 }

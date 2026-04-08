@@ -4,7 +4,15 @@ const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
 export async function POST(request: Request) {
-  const formData = await request.formData();
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return Response.json(
+      { error: { code: 'INVALID_REQUEST', message: '파일을 읽을 수 없었어요. 다시 시도해주세요.' } },
+      { status: 400 },
+    );
+  }
   const file = formData.get('file') as File | null;
   const canvasId = formData.get('canvas_id') as string | null;
 

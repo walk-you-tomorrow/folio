@@ -4,7 +4,7 @@ export async function GET(request: Request) {
   // Verify cron secret (Vercel Cron sends this header)
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    return Response.json({ error: { code: 'UNAUTHORIZED', message: '인증이 필요해요.' } }, { status: 401 });
   }
 
   const supabase = createServerSupabase();
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     .lt('expires_at', new Date().toISOString());
 
   if (fetchError || !expiredCanvases) {
-    return Response.json({ error: 'Failed to fetch expired canvases' }, { status: 500 });
+    return Response.json({ error: { code: 'CLEANUP_FAILED', message: '정리 작업을 수행하지 못했어요. 다시 시도해주세요.' } }, { status: 500 });
   }
 
   let deletedCount = 0;
